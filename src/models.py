@@ -1,34 +1,37 @@
 from typing import List, Literal, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+class Request(BaseModel):
+    request_id: str
+    issuer: str
+
+class GetDocumentsRequest(Request):
+    pass
 
 class Message(BaseModel):
     text: str
     role: Literal['user', 'assistant', 'system']
 
-class GenerationRequest(BaseModel):
-    request_id: str
-    issuer: str
-    pipeline_name: str
+class GenerationRequest(Request):
     messages: List[Message]
     streaming_mode: bool = False
-
-class TextMiningAssistantRequest(GenerationRequest):
-    document_ids: List[str]    
-
+    document_ids: List[str]        
 
 class GenerationResponse(BaseModel):
     request_id: str
     status: Literal['on_token', 'finished', 'started', 'failed']
 
-class TokenResult(GenerationResponse):
+class GenerationResult(BaseModel):
     text: str
 
-class GeneraionStartedResonse(GenerationResponse):
-    pipeline_name: str
+class OnTokenResponse(GenerationResponse):
+    result: GenerationResult
+
+class GeneraionStartedResponse(GenerationResponse):
+    streaming_mode: bool
 
 class GenerationFinishedResponse(GenerationResponse):
-    text: Optional[str]
+    result: Optional[GenerationResult]
     time_spent_sec: int 
 
 class GeneraionFailedResponse(GenerationResponse):

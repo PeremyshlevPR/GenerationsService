@@ -5,13 +5,14 @@ from datetime import datetime, timezone
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 from generations.generation_service import GeneraionsService 
 from generations import schemas
+from .. import AbstractCommunicationService
+from generations import AbstractGeneraionsService
 
-
-class KafkaGateway:
+class KafkaCommunicationService(AbstractCommunicationService):
     def __init__(self,
                  producer: AIOKafkaProducer,
                  consumer: AIOKafkaConsumer,
-                 generations_serivce: GeneraionsService):
+                 generations_serivce: AbstractGeneraionsService):
         self._producer = producer
         self._consumer = consumer
         self._generations_service = generations_serivce
